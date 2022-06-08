@@ -27,27 +27,27 @@ public class PersistentPlayer implements Player, SynchronousPlayer {
 	}
 
 	@Override
-	public String getQuestion() {
+	public Future<String> getQuestion() {
 		return null;
 	}
 
 	@Override
-	public String answerQuestion(String question, String character) {
+	public Future<String> answerQuestion(String question, String character) {
 		return null;
 	}
 
 	@Override
-	public String getGuess() {
+	public Future<String> getGuess() {
 		return null;
 	}
 
 	@Override
-	public boolean isReadyForGuess() {
-		return false;
+	public Future<Boolean> isReadyForGuess() {
+		return null;
 	}
 
 	@Override
-	public String answerGuess(String guess, String character) {
+	public Future<String> answerGuess(String guess, String character) {
 		return null;
 	}
 
