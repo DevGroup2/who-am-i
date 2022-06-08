@@ -3,9 +3,6 @@ package com.eleks.academy.whoami.core.state;
 import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.exception.GameException;
 import com.eleks.academy.whoami.core.impl.Answer;
-import com.eleks.academy.whoami.service.MainGameLoop;
-
-import java.util.Optional;
 
 import java.util.Optional;
 

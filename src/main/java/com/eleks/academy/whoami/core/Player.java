@@ -8,15 +8,20 @@ public interface Player {
 
 	Future<String> suggestCharacter();
 
-	Future<String> getQuestion();
+	// TODO: return Future<String>
+	String getQuestion();
 
-	Future<String> answerQuestion(String question, String character);
+	// TODO: return Future<String>
+	String answerQuestion(String question, String character);
 
-	Future<String> getGuess();
+	// TODO: return Future<String>
+	String getGuess();
 
-	Future<Boolean> isReadyForGuess();
+	// TODO: return Future<String>
+	boolean isReadyForGuess();
 
-	Future<String> answerGuess(String guess, String character);
+	// TODO: return Future<String>
+	String answerGuess(String guess, String character);
 
 	void close();
 

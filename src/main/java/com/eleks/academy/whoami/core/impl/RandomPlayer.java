@@ -29,37 +29,38 @@ public class RandomPlayer implements Player {
 	}
 
 	@Override
-	public Future<String> getQuestion() {
+	public String getQuestion() {
 		String question = availableQuestions.remove(0);
 		System.out.println("Player: " + name + ". Asks: " + question);
-		return CompletableFuture.completedFuture(question);
+		return question;
 	}
 
 	@Override
-	public Future<String> answerQuestion(String question, String character) {
+	public String answerQuestion(String question, String character) {
 		String answer = Math.random() < 0.5 ? "Yes" : "No";
 		System.out.println("Player: " + name + ". Answers: " + answer);
-		return CompletableFuture.completedFuture(answer);
+		return answer;
 	}
+	
 
 	@Override
-	public Future<String> answerGuess(String guess, String character) {
+	public String answerGuess(String guess, String character) {
 		String answer = Math.random() < 0.5 ? "Yes" : "No";
 		System.out.println("Player: " + name + ". Answers: " + answer);
-		return CompletableFuture.completedFuture(answer);
+		return answer;
 	}
 
 	@Override
-	public Future<String> getGuess() {
-		int randomPos = (int)(Math.random() * this.availableGuesses.size());
+	public String getGuess() {
+		int randomPos = (int)(Math.random() * this.availableGuesses.size()); 
 		String guess = this.availableGuesses.remove(randomPos);
 		System.out.println("Player: " + name + ". Guesses: Am I " + guess);
-		return CompletableFuture.completedFuture(guess);
+		return guess;
 	}
 
 	@Override
-	public Future<Boolean> isReadyForGuess() {
-		return CompletableFuture.completedFuture(availableQuestions.isEmpty());
+	public boolean isReadyForGuess() {
+		return availableQuestions.isEmpty();
 	}
 
 	@Override
@@ -70,6 +71,10 @@ public class RandomPlayer implements Player {
 
 	@Override
 	public void close() {
+		// TODO Auto-generated method stub
+		
 	}
 
+	
+	
 }

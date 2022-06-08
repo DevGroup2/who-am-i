@@ -10,6 +10,7 @@ public class GameCharacter {
 	private final String character;
 
 	private final String author;
+
 	private boolean taken;
 
 	public void markTaken() {

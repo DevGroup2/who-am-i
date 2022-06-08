@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.Socket;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import com.eleks.academy.whoami.core.Player;
 
@@ -25,6 +28,11 @@ public class ClientPlayer implements Player, AutoCloseable {
 
 	@Override
 	public Future<String> getName() {
+		// TODO: save name for future
+		return executor.submit(this::askName);
+	}
+
+	private String askName() {
 		String name = "";
 
 		try {
@@ -33,41 +41,41 @@ public class ClientPlayer implements Player, AutoCloseable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return CompletableFuture.completedFuture(name);
+		return name;
 	}
 
 	@Override
-	public Future<String> getQuestion() {
+	public String getQuestion() {
 		String question = "";
 
 		try {
 			writer.println("Ask your questinon: ");
 			question = reader.readLine();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return CompletableFuture.completedFuture(question);
+		return question;
 	}
 
 	@Override
-	public Future<String> answerQuestion(String question, String character) {
+	public String answerQuestion(String question, String character) {
 		String answer = "";
-
+		
 		try {
-			writer.printf("Answer second player question: %s Character is: %s", question, character);
+			writer.println("Answer second player question: " + question + "Character is:"+ character);
 			answer = reader.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		return CompletableFuture.completedFuture(answer);
+		
+		return answer;
 	}
 
 	@Override
-	public Future<String> getGuess() {
+	public String getGuess() {
 		String answer = "";
-
+		
+	
 		try {
 			writer.println("Write your guess: ");
 			answer = reader.readLine();
@@ -75,32 +83,27 @@ public class ClientPlayer implements Player, AutoCloseable {
 
 			e.printStackTrace();
 		}
-		return CompletableFuture.completedFuture(answer);
+		return answer;
 	}
 
 	@Override
-	public Future<Boolean> isReadyForGuess() {
+	public boolean isReadyForGuess() {
 		String answer = "";
-
+		
 		try {
 			writer.println("Are you ready to guess? ");
 			answer = reader.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-<<<<<<< HEAD
 		
 		return answer.equals("Yes");
-=======
-
-		return CompletableFuture.completedFuture(answer.equals("Yes") ? true : false);
->>>>>>> d7a0d6f ([LECHW-6] Maked Player methods as Future<Strings> & reMerging brunches)
 	}
 
 	@Override
-	public Future<String> answerGuess(String guess, String character) {
+	public String answerGuess(String guess, String character) {
 		String answer = "";
-
+		
 		try {
 			writer.println("Write your answer: ");
 			answer = reader.readLine();
@@ -108,19 +111,21 @@ public class ClientPlayer implements Player, AutoCloseable {
 
 			e.printStackTrace();
 		}
-		return CompletableFuture.completedFuture(answer);
+		return answer;
 	}
 
 	@Override
 	public Future<String> suggestCharacter() {
-		String character = "";
+		return executor.submit(this::doSuggestCharacter);
+	}
+
+	private String doSuggestCharacter() {
 		try {
-			writer.println("Write a character name for a next player: ");
-			character = reader.readLine();
+			return reader.readLine();
 		} catch (IOException e) {
 			e.printStackTrace();
+			return "";
 		}
-		return CompletableFuture.completedFuture(character);
 	}
 
 	@Override
@@ -135,11 +140,12 @@ public class ClientPlayer implements Player, AutoCloseable {
 		close(reader);
 		close(socket);
 	}
-
+	
 	private void close(AutoCloseable closeable) {
 		try {
 			closeable.close();
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

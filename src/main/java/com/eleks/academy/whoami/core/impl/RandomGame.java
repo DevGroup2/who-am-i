@@ -43,6 +43,7 @@ public class RandomGame implements Game {
 			this.players.add(player);
 			this.availableCharacters.add(character);
 		} catch (InterruptedException | ExecutionException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (TimeoutException e) {
 			System.err.println("Player did not suggest a charatern within %d %s".formatted(DURATION, UNIT));
@@ -52,31 +53,21 @@ public class RandomGame implements Game {
 	@Override
 	public boolean makeTurn() {
 		Player currentGuesser = currentTurn.getGuesser();
-		Set<Future<String>> answers;
+		Set<String> answers;
 		String guessersName;
-		Boolean isReadyForGuess;
 		try {
 			guessersName = currentGuesser.getName().get(DURATION, UNIT);
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			throw new RuntimeException(String.format("Failed to obtain a player's name (%s). Problem is: " + e, currentGuesser));
+			// TODO: Add custom runtime exception implementation
+			throw new RuntimeException("Failed to obtain a player's name", e);
 		}
-		try {
-			isReadyForGuess = currentGuesser.isReadyForGuess().get(DURATION, UNIT);
-		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			throw new RuntimeException(String.format("Failed to obtain an answer from a player %s. Problem is: " + e, currentGuesser));
-		}
-		if (isReadyForGuess) {
-			Future<String> guess = currentGuesser.getGuess();
+		if (currentGuesser.isReadyForGuess()) {
+			String guess = currentGuesser.getGuess();
 			answers = currentTurn.getOtherPlayers().stream()
-					.map(player -> player.answerGuess(String.valueOf(guess), this.playersCharacter.get(guessersName)))
+					.map(player -> player.answerGuess(guess, this.playersCharacter.get(guessersName)))
 					.collect(Collectors.toSet());
-<<<<<<< HEAD
 			long positiveCount = answers.stream().filter(YES::equals).count();
 			long negativeCount = answers.stream().filter(NO::equals).count();
-=======
-			long positiveCount = answers.stream().filter(a -> YES.equalsIgnoreCase(String.valueOf(a))).count();
-			long negativeCount = answers.stream().filter(a -> !YES.equalsIgnoreCase(String.valueOf(a))).count();
->>>>>>> d7a0d6f ([LECHW-6] Maked Player methods as Future<Strings> & reMerging brunches)
 
 			boolean win = positiveCount > negativeCount;
 
@@ -86,19 +77,12 @@ public class RandomGame implements Game {
 			return win;
 
 		} else {
-			Future<String> question = currentGuesser.getQuestion();
+			String question = currentGuesser.getQuestion();
 			answers = currentTurn.getOtherPlayers().stream()
-<<<<<<< HEAD
 				.map(player -> player.answerQuestion(question, this.playersCharacter.get(guessersName)))
 				.collect(Collectors.toSet());
 			long positiveCount = answers.stream().filter(YES::equals).count();
 			long negativeCount = answers.stream().filter(NO::equals).count();
-=======
-					.map(player -> player.answerQuestion(String.valueOf(question), this.playersCharacter.get(guessersName)))
-					.collect(Collectors.toSet());
-			long positiveCount = answers.stream().filter(a -> YES.equalsIgnoreCase(String.valueOf(a))).count();
-			long negativeCount = answers.stream().filter(a -> !YES.equalsIgnoreCase(String.valueOf(a))).count();
->>>>>>> d7a0d6f ([LECHW-6] Maked Player methods as Future<Strings> & reMerging brunches)
 			return positiveCount > negativeCount;
 		}
 

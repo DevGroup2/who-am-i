@@ -48,32 +48,34 @@ class RandomGameTest {
 		}
 
 		@Override
-		public Future<String> getQuestion() {
+		public String getQuestion() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Future<String> answerQuestion(String question, String character) {
+		public String answerQuestion(String question, String character) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Future<String> getGuess() {
+		public String getGuess() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Future<Boolean> isReadyForGuess() {
+		public boolean isReadyForGuess() {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public Future<String> answerGuess(String guess, String character) {
+		public String answerGuess(String guess, String character) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
 		public void close() {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}
