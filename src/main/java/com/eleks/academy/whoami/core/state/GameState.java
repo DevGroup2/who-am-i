@@ -39,4 +39,5 @@ public sealed interface GameState permits AbstractGameState {
 	 */
 	int getMaxPlayers();
 
+	GameState makeTurn();
 }

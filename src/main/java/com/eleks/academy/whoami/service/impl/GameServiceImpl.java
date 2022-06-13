@@ -33,7 +33,7 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	public GameDetails createGame(String player, NewGameRequest gameRequest) {
-		final var game = this.gameRepository.save(new PersistentGame(player, gameRequest.getMaxPlayers()));
+		final var game = this.gameRepository.save(new PersistentGame(gameRequest.getMaxPlayers()));
 
 		return GameDetails.of(game);
 	}

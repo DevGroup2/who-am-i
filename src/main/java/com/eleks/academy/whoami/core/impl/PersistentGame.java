@@ -6,9 +6,11 @@ import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.state.GameFinished;
 import com.eleks.academy.whoami.core.state.GameState;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
+import com.eleks.academy.whoami.model.response.PlayerState;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
@@ -21,8 +23,13 @@ public class PersistentGame implements Game, SynchronousGame {
 
 	private final Lock turnLock = new ReentrantLock();
 	private final String id;
+	private final Integer maxPlayers;
+	private final List<PlayerWithState> players;
 
+	private final String hostPlayer = null;
 	private final Queue<GameState> turns = new LinkedBlockingQueue<>();
+
+	private GameState state; // TODO: Not implemented yet
 
 	/**
 	 * Creates a new game (game room) and makes a first enrolment turn by a current player
@@ -34,12 +41,22 @@ public class PersistentGame implements Game, SynchronousGame {
 		this.id = String.format("%d-%d",
 				Instant.now().toEpochMilli(),
 				Double.valueOf(Math.random() * 999).intValue());
+		this.players = new ArrayList<>(maxPlayers);
 
+		PersistentPlayer player = new PersistentPlayer(hostPlayer);
+		PlayerWithState playerWithState = new PlayerWithState(player);
+		this.players.add(playerWithState);
+		this.maxPlayers = maxPlayers;
+
+		GameState gameState = new WaitingForPlayers(maxPlayers);
+		turns.add(gameState);
 	}
+
 
 	@Override
 	public Optional<SynchronousPlayer> findPlayer(String player) {
-		return this.applyIfPresent(this.turns.peek(), gameState -> gameState.findPlayer(player));
+		return this.players.stream().map(PlayerWithState::getPlayer)
+				.filter(synchronousPlayer -> synchronousPlayer.getName().equals(player)).findFirst();
 	}
 
 	@Override
@@ -50,6 +67,11 @@ public class PersistentGame implements Game, SynchronousGame {
 	@Override
 	public SynchronousPlayer enrollToGame(String player) {
 		// TODO: Add player to players list
+		if (players.size() == maxPlayers){
+			initGame();
+		}
+		PersistentPlayer persistentPlayer = new PersistentPlayer(player, PlayerState.READY);
+		this.players.add(new PlayerWithState(persistentPlayer));
 		return new PersistentPlayer(player);
 	}
 
@@ -75,29 +97,25 @@ public class PersistentGame implements Game, SynchronousGame {
 
 	@Override
 	public boolean isAvailable() {
-		return this.turns.peek() instanceof WaitingForPlayers;
+		return this.players.size() < maxPlayers;
 	}
 
 	@Override
 	public String getStatus() {
-		return this.applyIfPresent(this.turns.peek(), GameState::getStatus);
+//		return this.applyIfPresent(this.turns.peek(), GameState::getStatus);
+		//this is alternative version of a row above ^
+		return this.turns.peek().getCurrentTurn(); // це трошки зле що getStatus() повертає getName()
+		// TODO: В кожному статусі оверрайднути цю штуку і написати стрінгу з назвою стейту
 	}
 
 	@Override
 	public List<PlayerWithState> getPlayersInGame() {
-		// TODO: Implement
-		return null;
+		return this.players;
 	}
 
 	@Override
 	public boolean isFinished() {
 		return this.turns.isEmpty();
-	}
-
-
-	@Override
-	public boolean makeTurn() {
-		return true;
 	}
 
 	@Override
@@ -108,6 +126,20 @@ public class PersistentGame implements Game, SynchronousGame {
 	@Override
 	public void initGame() {
 
+	}
+
+	@Override
+	public boolean makeTurn() {
+		this.turnLock.lock();
+
+		try	{ // Якщо прийде декілька потоків, щоб лише один міняв хід
+			Optional.ofNullable(this.turns.poll())
+					.map(GameState::makeTurn) // збираємо усі питання, опрацьовуємо
+					.ifPresent(this.turns::add); // і кладемо наступний хід в якому буде подальша дія
+		} finally {
+			this.turnLock.unlock();
+		}
+		return !(this.turns.peek() instanceof GameFinished);
 	}
 
 	@Override
