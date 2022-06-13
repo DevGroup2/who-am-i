@@ -2,6 +2,7 @@ package com.eleks.academy.whoami.core.impl;
 
 import com.eleks.academy.whoami.core.Player;
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.model.response.PlayerState;
 
 import java.util.Objects;
 import java.util.Queue;
@@ -12,6 +13,7 @@ public class PersistentPlayer implements Player, SynchronousPlayer {
 
 	private final String name;
 	private final CompletableFuture<String> character = new CompletableFuture<>();
+	private PlayerState state;
 
 
 	private Queue<String> questionQueue;
@@ -21,6 +23,11 @@ public class PersistentPlayer implements Player, SynchronousPlayer {
 
 	public PersistentPlayer(String name) {
 		this.name = Objects.requireNonNull(name);
+	}
+
+	public PersistentPlayer(String name, PlayerState state) {
+		this.name = name;
+		this.state = state;
 	}
 
 	@Override
@@ -45,6 +52,8 @@ public class PersistentPlayer implements Player, SynchronousPlayer {
 
 	@Override
 	public Future<String> answerQuestion(String question, String character) {
+		//TODO: implement a method which will set a question in this Future in a method hostPlayer (PersistantGame)
+
 		return null;
 	}
 

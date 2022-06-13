@@ -12,11 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PlayerWithState {
-
 	private SynchronousPlayer player;
-
 	private QuestionAnswer answer;
 
 	private PlayerState state;
+
+	public PlayerWithState(SynchronousPlayer player) {
+		this.player = player;
+		this.state = getState();
+	}
 
 }
