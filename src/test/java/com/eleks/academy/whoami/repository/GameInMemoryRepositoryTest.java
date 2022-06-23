@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameInMemoryRepositoryTest {
 
 	private final NewGameRequest gameRequest = new NewGameRequest();
-git
 	private GameInMemoryRepository gameRepository = new GameInMemoryRepository();
 	@BeforeEach
 	public void setMockMvc() {
