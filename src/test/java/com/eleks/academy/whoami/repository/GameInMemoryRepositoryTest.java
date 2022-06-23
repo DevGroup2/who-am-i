@@ -19,13 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 public class GameInMemoryRepositoryTest {
 
 	private final NewGameRequest gameRequest = new NewGameRequest();
-
-	@InjectMocks
-	GameInMemoryRepository gameRepository;
-
+git
+	private GameInMemoryRepository gameRepository = new GameInMemoryRepository();
 	@BeforeEach
 	public void setMockMvc() {
 		gameRequest.setMaxPlayers(4);
+		gameRepository = new GameInMemoryRepository();
 	}
 
 	@Test
