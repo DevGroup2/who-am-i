@@ -2,12 +2,12 @@ package com.eleks.academy.whoami.repository;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 public interface GameRepository {
 
-	Stream<SynchronousGame> findAllAvailable(String player);
+	List<SynchronousGame> findAllAvailable(String player);
 
 	SynchronousGame save(SynchronousGame game);
 

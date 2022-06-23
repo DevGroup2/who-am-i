@@ -6,6 +6,7 @@ import com.eleks.academy.whoami.core.impl.PersistentPlayer;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
+import com.eleks.academy.whoami.model.response.GameLight;
 import com.eleks.academy.whoami.model.response.PlayerState;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 import com.eleks.academy.whoami.repository.GameRepository;
@@ -44,10 +45,25 @@ public class GameServiceImplTest {
 	}
 
 	@Test
+	void findAvailableGamesTest () {
+		final String player = "player";
+
+		SynchronousGame synchronousGame = new PersistentGame(player, gameRequest.getMaxPlayers());
+		when(gameRepository.findAllAvailable(player)).thenReturn(List.of(synchronousGame));
+
+		assertThat(gameService.findAvailableGames(player))
+				.usingRecursiveFieldByFieldElementComparatorOnFields("status")
+				.containsOnly(GameLight.builder()
+						.id("some id")
+						.status("WAITING_FOR_PLAYERS")
+						.build());
+	}
+
+	@Test
 	void createGameTest() {
 		final String idNaming = "id";
 		final String player = "player";
-		final String expectedGameStatus = WaitingForPlayers.class.getName();
+		final String expectedGameStatus = WaitingForPlayers.WAITING_FOR_PLAYERS;
 
 		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
 
@@ -74,7 +90,7 @@ public class GameServiceImplTest {
 	@Test
 	void findByIdAndPlayerTest() {
 		final String player = "player";
-		final String expectedGameStatus = WaitingForPlayers.class.getName();
+		final String expectedGameStatus = WaitingForPlayers.WAITING_FOR_PLAYERS;
 
 		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
 		final String id = game.getId();
@@ -108,12 +124,11 @@ public class GameServiceImplTest {
 
 		when(gameRepository.findById(id)).thenReturn(createdGame);
 
-//		var foundGame = gameService.findByIdAndPlayer(id, player);
+		var foundGame = gameService.findByIdAndPlayer(id, player);
 		var fakeGame = gameService.findByIdAndPlayer(fakeId, player);
 
 		assertFalse(fakeGame.isPresent());
 
 		verify(gameRepository, times(1)).findById(id);
 	}
-
 }

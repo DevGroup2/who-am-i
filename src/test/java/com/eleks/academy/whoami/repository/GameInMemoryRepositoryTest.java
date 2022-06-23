@@ -7,6 +7,7 @@ import com.eleks.academy.whoami.repository.impl.GameInMemoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
@@ -19,11 +20,21 @@ public class GameInMemoryRepositoryTest {
 
 	private final NewGameRequest gameRequest = new NewGameRequest();
 
-	private final GameInMemoryRepository gameRepository = new GameInMemoryRepository();
+	@InjectMocks
+	GameInMemoryRepository gameRepository;
 
 	@BeforeEach
 	public void setMockMvc() {
 		gameRequest.setMaxPlayers(4);
+	}
+
+	@Test
+	void findAllAvailableTest(){
+		final String player = "player";
+		final String newPlayer = "New player";
+		gameRepository.save(new PersistentGame(player, gameRequest.getMaxPlayers()));
+		gameRepository.save(new PersistentGame(newPlayer, gameRequest.getMaxPlayers()));
+		assertEquals(2, gameRepository.findAllAvailable(player).size());
 	}
 
 	@Test

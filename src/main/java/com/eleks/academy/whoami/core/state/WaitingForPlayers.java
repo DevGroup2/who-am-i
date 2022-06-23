@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public final class WaitingForPlayers extends AbstractGameState {
 
+	public static final String WAITING_FOR_PLAYERS = "WAITING_FOR_PLAYERS";
 	private final Map<String, SynchronousPlayer> players;
 
 	public WaitingForPlayers(int maxPlayers) {
@@ -37,6 +38,6 @@ public final class WaitingForPlayers extends AbstractGameState {
 
 	@Override
 	public String getStatus() {
-		return super.getStatus();
+		return WAITING_FOR_PLAYERS;
 	}
 }
