@@ -27,6 +27,7 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public List<GameLight> findAvailableGames(String player) {
 		return this.gameRepository.findAllAvailable(player)
+				.stream()
 				.map(GameLight::of)
 				.toList();
 	}
