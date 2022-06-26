@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Optional;
 
+import static com.eleks.academy.whoami.enums.GameStatus.WAITING_FOR_PLAYERS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -57,7 +58,7 @@ class GameControllerTest {
 	void createGame() throws Exception {
 		GameDetails gameDetails = new GameDetails();
 		gameDetails.setId("12613126");
-		gameDetails.setStatus("WaitingForPlayers");
+		gameDetails.setStatus(WAITING_FOR_PLAYERS);
 
 		when(gameService.createGame(eq("player"), any(NewGameRequest.class))).thenReturn(gameDetails);
 
@@ -70,7 +71,7 @@ class GameControllerTest {
 										"}"))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("id").value("12613126"))
-				.andExpect(jsonPath("status").value("WaitingForPlayers"));
+				.andExpect(jsonPath("status").value("WAITING_FOR_PLAYERS"));
 	}
 
 	@Test

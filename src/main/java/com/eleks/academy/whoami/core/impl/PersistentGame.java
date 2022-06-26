@@ -6,6 +6,7 @@ import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.state.GameFinished;
 import com.eleks.academy.whoami.core.state.GameState;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
+import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.response.PlayerState;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 import lombok.EqualsAndHashCode;
@@ -93,7 +94,7 @@ public class PersistentGame implements Game, SynchronousGame {
 	}
 
 	@Override
-	public String getStatus() {
+	public GameStatus getStatus() {
 		return this.applyIfPresent(this.turns.peek(), GameState::getStatus);
 	}
 

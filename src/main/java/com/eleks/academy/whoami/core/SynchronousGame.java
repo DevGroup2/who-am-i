@@ -1,6 +1,7 @@
 package com.eleks.academy.whoami.core;
 
 import com.eleks.academy.whoami.core.impl.Answer;
+import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface SynchronousGame {
 
 	List<PlayerWithState> getPlayersInGame();
 
-	String getStatus();
+	GameStatus getStatus();
 
 	boolean isAvailable();
 

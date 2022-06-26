@@ -4,6 +4,7 @@ import com.eleks.academy.whoami.core.SynchronousGame;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
+import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
 import com.eleks.academy.whoami.model.response.GameLight;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 import java.util.Optional;
 
+import static com.eleks.academy.whoami.enums.GameStatus.WAITING_FOR_PLAYERS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -55,7 +57,7 @@ public class GameServiceImplTest {
 				.usingRecursiveFieldByFieldElementComparatorOnFields("status")
 				.containsOnly(GameLight.builder()
 						.id("some id")
-						.status("WAITING_FOR_PLAYERS")
+						.status(WAITING_FOR_PLAYERS)
 						.build());
 	}
 
@@ -63,7 +65,7 @@ public class GameServiceImplTest {
 	void createGameTest() {
 		final String idNaming = "id";
 		final String player = "player";
-		final String expectedGameStatus = WaitingForPlayers.WAITING_FOR_PLAYERS;
+		final GameStatus expectedGameStatus = WAITING_FOR_PLAYERS;
 
 		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
 
@@ -90,7 +92,7 @@ public class GameServiceImplTest {
 	@Test
 	void findByIdAndPlayerTest() {
 		final String player = "player";
-		final String expectedGameStatus = WaitingForPlayers.WAITING_FOR_PLAYERS;
+		final GameStatus expectedGameStatus = WAITING_FOR_PLAYERS;
 
 		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
 		final String id = game.getId();

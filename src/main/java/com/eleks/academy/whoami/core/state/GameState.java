@@ -1,6 +1,7 @@
 package com.eleks.academy.whoami.core.state;
 
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.enums.GameStatus;
 
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ public sealed interface GameState permits AbstractGameState {
 	 *
 	 * @return the status of the current state to show to players
 	 */
-	String getStatus();
+	GameStatus getStatus();
 
 	/**
 	 * Used for presentation purposes only

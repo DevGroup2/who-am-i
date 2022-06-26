@@ -1,5 +1,6 @@
 package com.eleks.academy.whoami.core.state;
 
+import com.eleks.academy.whoami.enums.GameStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -13,8 +14,8 @@ public abstract sealed class AbstractGameState implements GameState
 
 	// TODO: Implement for each state
 	@Override
-	public String getStatus() {
-		return this.getClass().getName();
+	public GameStatus getStatus() {
+		return this.getStatus();
 	}
 
 	/**
