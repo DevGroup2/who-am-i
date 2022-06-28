@@ -1,10 +1,13 @@
 package com.eleks.academy.whoami.service;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
+import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
+import com.eleks.academy.whoami.core.state.SuggestingCharacters;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.enums.GameStatus;
+import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
 import com.eleks.academy.whoami.model.response.GameLight;
@@ -15,20 +18,23 @@ import com.eleks.academy.whoami.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.eleks.academy.whoami.enums.GameStatus.WAITING_FOR_PLAYERS;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
@@ -40,6 +46,7 @@ public class GameServiceImplTest {
 	private GameServiceImpl gameService;
 
 	private final NewGameRequest gameRequest = new NewGameRequest();
+	private final CharacterSuggestion characterSuggestion = new CharacterSuggestion();
 
 	@BeforeEach
 	public void setMockMvc() {
@@ -75,7 +82,7 @@ public class GameServiceImplTest {
 
 		var expectedGame = GameDetails.builder()
 				.status(expectedGameStatus)
-				.players(List.of(new PlayerWithState(new PersistentPlayer(player), PlayerState.READY)))
+				.players(List.of(new PlayerWithState(new PersistentPlayer(player), PlayerState.WAITING)))
 				.build();
 
 		assertThat(gameDetails)
@@ -105,7 +112,7 @@ public class GameServiceImplTest {
 		var expectedGame = GameDetails.builder()
 				.id(foundGame.get().getId())
 				.status(expectedGameStatus)
-				.players(List.of(new PlayerWithState(new PersistentPlayer(player), PlayerState.READY)))
+				.players(List.of(new PlayerWithState(new PersistentPlayer(player), PlayerState.WAITING)))
 				.build();
 		Optional<GameDetails> expectedGameOp = Optional.of(expectedGame);
 
@@ -132,5 +139,21 @@ public class GameServiceImplTest {
 		assertFalse(fakeGame.isPresent());
 
 		verify(gameRepository, times(1)).findById(id);
+	}
+
+	@Test
+	void suggestCharacterCallTheMethodTest() {
+		final String player = "Player Name";
+		final String character = "Some Character";
+		final CharacterSuggestion characterSuggestion = new CharacterSuggestion(character);
+
+		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
+		final String id = game.getId();
+
+		GameServiceImpl gameServiceImpl = mock(gameService.getClass());
+
+		doNothing().when(gameServiceImpl).suggestCharacter(id, player, characterSuggestion);
+		gameServiceImpl.suggestCharacter(id, player, characterSuggestion);
+		verify((gameServiceImpl), times(1)).suggestCharacter(id, player, characterSuggestion);
 	}
 }

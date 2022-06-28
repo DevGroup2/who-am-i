@@ -1,8 +1,9 @@
-package com.eleks.academy.whoami.configuration;
+package com.eleks.academy.whoami.api.configuration;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.eleks.academy.whoami.configuration.ServerProperties;
 import org.junit.jupiter.api.Test;
 
 class ServerPropertiesTest {

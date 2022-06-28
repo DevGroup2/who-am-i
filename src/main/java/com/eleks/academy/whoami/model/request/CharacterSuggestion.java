@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 public class CharacterSuggestion {
 
 	@NotNull
-	@Size(min = 1, max = 50, message = "character length must be between {min} and {max}!")
+	@Size(min = 2, max = 50, message = "Character length must be between {min} and {max}!")
 	private String character;
 
 }

@@ -44,7 +44,7 @@ public class PersistentGame implements Game, SynchronousGame {
 		this.players = new ArrayList<>(maxPlayers);
 
 		PersistentPlayer player = new PersistentPlayer(hostPlayer);
-		PlayerWithState playerWithState = new PlayerWithState(player, PlayerState.READY);
+		PlayerWithState playerWithState = new PlayerWithState(player, PlayerState.WAITING);
 		this.players.add(playerWithState);
 
 		GameState gameState = new WaitingForPlayers(maxPlayers);
