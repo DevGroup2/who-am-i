@@ -10,13 +10,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PersistentPlayerTest {
 
-	@Test
-	void allowToSuggestCharacterOnlyOnce() {
-		PersistentPlayer player = new PersistentPlayer("PLayerName");
-		Future<String> character = player.suggestCharacter();
-		assertFalse(character.isDone());
-		player.setCharacter("character");
-		assertTrue(character.isDone());
-		assertThrows(IllegalStateException.class, () -> player.setCharacter("character"));
-	}
+//	@Test
+//	void allowToSuggestCharacterOnlyOnce() {
+//		PersistentPlayer player = new PersistentPlayer("PLayerName");
+//		Future<String> character = player.suggestCharacter();
+//		assertFalse(character.isDone());
+//		player.setCharacter("character");
+//		assertTrue(character.isDone());
+//		assertThrows(IllegalStateException.class, () -> player.setCharacter("character"));
+//	}
 }

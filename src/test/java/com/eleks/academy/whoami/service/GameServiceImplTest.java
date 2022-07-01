@@ -9,10 +9,7 @@ import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
-import com.eleks.academy.whoami.model.response.GameDetails;
-import com.eleks.academy.whoami.model.response.GameLight;
-import com.eleks.academy.whoami.model.response.PlayerState;
-import com.eleks.academy.whoami.model.response.PlayerWithState;
+import com.eleks.academy.whoami.model.response.*;
 import com.eleks.academy.whoami.repository.GameRepository;
 import com.eleks.academy.whoami.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -142,7 +139,12 @@ public class GameServiceImplTest {
 	}
 
 	@Test
-	void suggestCharacterCallTheMethodTest() {
+	void suggestCharacterTest() {
+		//TODO: Протестити метод чи в репозиторій додається персонаж.
+		// то має провірити чи є така гра в репозиторію, потім дістати з неї плеєра,
+		// потім в того плеєра засетити персонажа, і перевірити чи є такий персонаж
+		// ( тіпс. в кожному тесті писати свій окримей репозиторій, окрему імплементацію сервіса)
+
 		final String player = "Player Name";
 		final String character = "Some Character";
 		final CharacterSuggestion characterSuggestion = new CharacterSuggestion(character);
@@ -150,10 +152,12 @@ public class GameServiceImplTest {
 		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
 		final String id = game.getId();
 
-		GameServiceImpl gameServiceImpl = mock(gameService.getClass());
+		when(gameRepository.findById(id).filter(SynchronousGame::isAvailable));
 
-		doNothing().when(gameServiceImpl).suggestCharacter(id, player, characterSuggestion);
-		gameServiceImpl.suggestCharacter(id, player, characterSuggestion);
-		verify((gameServiceImpl), times(1)).suggestCharacter(id, player, characterSuggestion);
+
+
+
+
+
 	}
 }
