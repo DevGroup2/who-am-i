@@ -1,14 +1,17 @@
 package com.eleks.academy.whoami.core.state;
 
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.enums.GameStatus;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.eleks.academy.whoami.enums.GameStatus.WAITING_FOR_PLAYERS;
+
 public final class WaitingForPlayers extends AbstractGameState {
 
-	public static final String WAITING_FOR_PLAYERS = "WAITING_FOR_PLAYERS";
 	private final Map<String, SynchronousPlayer> players;
 
 	public WaitingForPlayers(int maxPlayers) {
@@ -37,7 +40,17 @@ public final class WaitingForPlayers extends AbstractGameState {
 	}
 
 	@Override
-	public String getStatus() {
+	public GameStatus getStatus() {
 		return WAITING_FOR_PLAYERS;
 	}
+
+	public Map<String, SynchronousPlayer> getPlayers() {
+		return this.players;
+	}
+
+	public SynchronousPlayer addPlayer(SynchronousPlayer player) {
+		players.put(player.getName(), player);
+		return player;
+	}
+
 }

@@ -70,7 +70,7 @@ class GameApiTest {
 	@Test
 	void createGameTest() throws IOException {
 		try(InputStream in1 = getClass().getResourceAsStream("/models/game/create-game-request.json");
-				InputStream in2 = getClass().getResourceAsStream("/models/game/create-game-response.json");){
+				InputStream in2 = getClass().getResourceAsStream("/models/game/create-game-response.json")){
 			String expectedRequest = new String(in1.readAllBytes());
 			String expectedResponse = new String(in2.readAllBytes());
 			
