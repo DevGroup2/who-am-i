@@ -27,7 +27,7 @@ public class PersistentPlayer implements SynchronousPlayer {
 	public String getName() {
 		return this.name;
 	}
-	@Override
+
 	public String getSuggestedCharacter() {
 		return suggestedCharacter;
 	}
@@ -49,10 +49,12 @@ public class PersistentPlayer implements SynchronousPlayer {
 	}
 	@Override
 	public void setSuggestedCharacter(CharacterSuggestion suggestion) {
-		if (this.suggested){
+		if (this.suggested) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Character has already been suggested!");
+		} else {
+			chooseCharacter(suggestion.getCharacter());
+			this.suggested = true;
 		}
-		chooseCharacter(suggestion.getCharacter());
 	}
 
 

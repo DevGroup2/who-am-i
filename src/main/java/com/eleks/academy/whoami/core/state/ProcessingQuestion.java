@@ -38,4 +38,8 @@ public final class ProcessingQuestion extends AbstractGameState {
 		return this.currentPlayer;
 	}
 
+	@Override
+	public Map<String, SynchronousPlayer> getPlayers() {
+		return null;
+	}
 }

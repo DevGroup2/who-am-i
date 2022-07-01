@@ -31,7 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
@@ -79,7 +81,7 @@ public class GameServiceImplTest {
 
 		var expectedGame = GameDetails.builder()
 				.status(expectedGameStatus)
-				.players(List.of(new PlayerWithState(new PersistentPlayer(player), PlayerState.WAITING)))
+				.players(List.of(new PlayerWithState(new PersistentPlayer(player), PlayerState.READY)))
 				.build();
 
 		assertThat(gameDetails)
@@ -109,7 +111,7 @@ public class GameServiceImplTest {
 		var expectedGame = GameDetails.builder()
 				.id(foundGame.get().getId())
 				.status(expectedGameStatus)
-				.players(List.of(new PlayerWithState(new PersistentPlayer(player), PlayerState.WAITING)))
+				.players(List.of(new PlayerWithState(new PersistentPlayer(player), PlayerState.READY)))
 				.build();
 		Optional<GameDetails> expectedGameOp = Optional.of(expectedGame);
 
@@ -139,25 +141,20 @@ public class GameServiceImplTest {
 	}
 
 	@Test
-	void suggestCharacterTest() {
-		//TODO: Протестити метод чи в репозиторій додається персонаж.
-		// то має провірити чи є така гра в репозиторію, потім дістати з неї плеєра,
-		// потім в того плеєра засетити персонажа, і перевірити чи є такий персонаж
-		// ( тіпс. в кожному тесті писати свій окримей репозиторій, окрему імплементацію сервіса)
-
-		final String player = "Player Name";
-		final String character = "Some Character";
-		final CharacterSuggestion characterSuggestion = new CharacterSuggestion(character);
+	void enrollToGameTest() {
+		final String player = "player";
+		final String newPlayer = "newPlayer";
 
 		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
+		Optional<SynchronousGame> createdGame = Optional.of(game);
 		final String id = game.getId();
 
-		when(gameRepository.findById(id).filter(SynchronousGame::isAvailable));
+		when(gameRepository.findById(id)).thenReturn(createdGame);
 
+		var enrolledPlayer = gameService.enrollToGame(id, newPlayer);
+		var expectedPlayer = new PersistentPlayer(newPlayer);
 
-
-
-
-
+		assertEquals(enrolledPlayer, expectedPlayer);
 	}
+
 }

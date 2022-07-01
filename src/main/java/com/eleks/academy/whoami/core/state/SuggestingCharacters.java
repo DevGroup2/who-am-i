@@ -3,6 +3,7 @@ package com.eleks.academy.whoami.core.state;
 import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.exception.GameException;
 import com.eleks.academy.whoami.core.impl.GameCharacter;
+import com.eleks.academy.whoami.enums.GameStatus;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -49,6 +50,16 @@ public final class SuggestingCharacters extends AbstractGameState {
 		return Optional.ofNullable(this.players.get(player));
 	}
 
+	@Override
+	public GameStatus getStatus() {
+		return GameStatus.SUGGESTING_CHARACTERS;
+	}
+
+	@Override
+	public Map<String, SynchronousPlayer> getPlayers() {
+		return null;
+	}
+
 	// TODO: Consider extracting into {@link GameState}
 	private Boolean finished() {
 		final var enoughCharacters = Optional.of(this.suggestedCharacters)
@@ -62,6 +73,8 @@ public final class SuggestingCharacters extends AbstractGameState {
 	}
 
 	private GameState suggestCharacter(String player, String character) {
+		// TODO: returned method wich add suggestedCharacter to playerCharacterMap
+		//  and compere with Nazar's Pull Request
 		List<GameCharacter> characters = this.suggestedCharacters.get(player);
 
 		if (Objects.isNull(characters)) {

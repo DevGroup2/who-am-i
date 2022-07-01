@@ -1,6 +1,9 @@
 package com.eleks.academy.whoami.controller;
 
 import com.eleks.academy.whoami.configuration.GameControllerAdvice;
+import com.eleks.academy.whoami.core.SynchronousGame;
+import com.eleks.academy.whoami.core.impl.PersistentGame;
+import com.eleks.academy.whoami.core.impl.PersistentPlayer;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
@@ -20,15 +23,8 @@ import java.util.Optional;
 import static com.eleks.academy.whoami.enums.GameStatus.WAITING_FOR_PLAYERS;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
 class GameControllerTest {
@@ -146,6 +142,29 @@ class GameControllerTest {
 				.andExpect(content().string(""));
 
 		verify(gameService, times(1)).findByIdAndPlayer(fakeId, player);
+	}
+
+	@Test
+	void enrollToGameTest() throws Exception {
+		final String hostPlayer = "hostPlayer";
+		final String newPlayer = "newPlayer";
+
+		SynchronousGame game = new PersistentGame(hostPlayer, gameRequest.getMaxPlayers());
+		final String id = game.getId();
+
+		var player1 = new PersistentPlayer(newPlayer);
+		var expectedResponse = "{\"name\":\"newPlayer\",\"character\":null,\"question\":null,\"guess\":null}";
+
+		when(gameService.enrollToGame(id, newPlayer)).thenReturn(player1);
+
+		this.mockMvc.perform(
+						MockMvcRequestBuilders.post("/games/{id}/players", id)
+								.header("X-Player", newPlayer)
+								.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().json(expectedResponse));
+
+		verify(gameService, times(1)).enrollToGame(id, newPlayer);
 	}
 
 }
