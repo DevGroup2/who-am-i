@@ -1,24 +1,23 @@
 package com.eleks.academy.whoami.core.impl;
 
-import com.eleks.academy.whoami.core.Player;
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.core.exception.GameException;
+import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import lombok.EqualsAndHashCode;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
-import java.util.Queue;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class PersistentPlayer implements Player, SynchronousPlayer {
+public class PersistentPlayer implements SynchronousPlayer {
 
 	@EqualsAndHashCode.Include private final String name;
-	private final CompletableFuture<String> character = new CompletableFuture<>();
 
-	private Queue<String> questionQueue;
-	private volatile CompletableFuture<String> question;
-	private volatile CompletableFuture<String> currentAnswer;
-	private volatile CompletableFuture<Boolean> readyForAnswerFuture;
+	private String assignedCharacter;
+	private boolean assigned = false;
+	private boolean suggested = false;
+	private String suggestedCharacter;
 
 	public PersistentPlayer(String name) {
 		this.name = Objects.requireNonNull(name);
@@ -28,52 +27,33 @@ public class PersistentPlayer implements Player, SynchronousPlayer {
 	public String getName() {
 		return this.name;
 	}
-
+	@Override
+	public String getSuggestedCharacter() {
+		return suggestedCharacter;
+	}
 	@Override
 	public String getCharacter() {
-		return null;
+		return assignedCharacter;
 	}
-
-	@Override
-	public Future<String> suggestCharacter() {
-		return character;
-	}
-
-	@Override
-	public Future<String> getQuestion() {
-		return null;
-	}
-
-	@Override
-	public Future<String> answerQuestion(String question, String character) {
-		return null;
-	}
-
-	@Override
-	public Future<String> getGuess() {
-		return null;
-	}
-
-	@Override
-	public Future<Boolean> isReadyForGuess() {
-		return null;
-	}
-
-	@Override
-	public Future<String> answerGuess(String guess, String character) {
-		return null;
-	}
-
-	@Override
-	public void close() {
-
-	}
-
 	@Override
 	public void setCharacter(String character) {
-		if (!this.character.complete(character)) {
-			throw new IllegalStateException("Character has already been suggested!");
+		if (!assigned) {
+			suggestedCharacter = character;
+			assigned = true;
+		} else {
+			throw new GameException("Something going wrong when trying to assign a character to a player");
 		}
 	}
+	private void chooseCharacter(String character) {
+		this.suggestedCharacter = character;
+	}
+	@Override
+	public void setSuggestedCharacter(CharacterSuggestion suggestion) {
+		if (this.suggested){
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Character has already been suggested!");
+		}
+		chooseCharacter(suggestion.getCharacter());
+	}
+
 
 }

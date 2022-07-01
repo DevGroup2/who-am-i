@@ -5,6 +5,7 @@ import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
+import com.eleks.academy.whoami.model.response.ChoosingCharacter;
 import com.eleks.academy.whoami.model.response.GameDetails;
 import com.eleks.academy.whoami.model.response.GameLight;
 import com.eleks.academy.whoami.model.response.TurnDetails;
@@ -57,10 +58,21 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Override
-	public void suggestCharacter(String id, String player, CharacterSuggestion suggestion) {
+	public Optional<ChoosingCharacter> suggestCharacter(String id, String player, CharacterSuggestion suggestion) {
 		this.gameRepository.findById(id)
-				.flatMap(game -> game.findPlayer(player))
-				.ifPresent(p -> p.setCharacter(suggestion.getCharacter()));
+				.filter(SynchronousGame::isAvailable)
+				.map(game -> game.findPlayer(player))
+				.ifPresentOrElse(p -> p.ifPresentOrElse(suggest -> suggest.setSuggestedCharacter(suggestion),
+								() -> {
+									throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't found a player");
+								}
+						),
+						() -> {
+							throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
+						}
+				);
+		var availablePlayer = gameRepository.findById(id).flatMap(p -> p.findPlayer(player)).get();
+		return Optional.of(ChoosingCharacter.of(availablePlayer));
 	}
 
 	@Override

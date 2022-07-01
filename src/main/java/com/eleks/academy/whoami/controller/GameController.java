@@ -1,11 +1,13 @@
 package com.eleks.academy.whoami.controller;
 
 import com.eleks.academy.whoami.core.SynchronousPlayer;
+import com.eleks.academy.whoami.core.exception.GameException;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.Message;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
 import com.eleks.academy.whoami.model.response.GameLight;
+import com.eleks.academy.whoami.model.response.ChoosingCharacter;
 import com.eleks.academy.whoami.model.response.TurnDetails;
 import com.eleks.academy.whoami.service.GameService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 import static com.eleks.academy.whoami.utils.StringUtils.Headers.PLAYER;
+import static org.springframework.http.ResponseEntity.*;
 
 @RestController
 @RequestMapping("/games")
@@ -42,7 +46,7 @@ public class GameController {
 												@RequestHeader(PLAYER) String player) {
 		return this.gameService.findByIdAndPlayer(id, player)
 				.map(ResponseEntity::ok)
-				.orElseGet(() -> ResponseEntity.notFound().build());
+				.orElseGet(() -> notFound().build());
 	}
 
 
@@ -54,10 +58,13 @@ public class GameController {
 
 	@PostMapping("/{id}/characters")
 	@ResponseStatus(HttpStatus.OK)
-	public void suggestCharacter(@PathVariable("id") String id,
+	public ResponseEntity<ChoosingCharacter> suggestCharacter(@PathVariable("id") String id,
 								 @RequestHeader(PLAYER) String player,
 								 @Valid @RequestBody CharacterSuggestion suggestion) {
-		this.gameService.suggestCharacter(id, player, suggestion);
+		return this.gameService.suggestCharacter(id, player, suggestion)
+				.map(ResponseEntity::ok)
+				.orElseGet(()-> badRequest().build());
+
 	}
 
 	@GetMapping("/{id}/turn")
@@ -65,7 +72,7 @@ public class GameController {
 													@RequestHeader(PLAYER) String player) {
 		return this.gameService.findTurnInfo(id, player)
 				.map(ResponseEntity::ok)
-				.orElseGet(() -> ResponseEntity.notFound().build());
+				.orElseGet(() -> notFound().build());
 	}
 
 	@PostMapping("/{id}")
@@ -73,7 +80,7 @@ public class GameController {
 												 @RequestHeader(PLAYER) String player) {
 		return this.gameService.startGame(id, player)
 				.map(ResponseEntity::ok)
-				.orElseGet(() -> ResponseEntity.notFound().build());
+				.orElseGet(() -> notFound().build());
 	}
 
 	@PostMapping("/{id}/questions")
