@@ -1,11 +1,8 @@
 package com.eleks.academy.whoami.service;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
-import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
-import com.eleks.academy.whoami.core.state.SuggestingCharacters;
-import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.enums.GameStatus;
 import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
@@ -15,25 +12,20 @@ import com.eleks.academy.whoami.service.impl.GameServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.eleks.academy.whoami.enums.GameStatus.WAITING_FOR_PLAYERS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GameServiceImplTest {
@@ -157,4 +149,28 @@ public class GameServiceImplTest {
 		assertEquals(enrolledPlayer, expectedPlayer);
 	}
 
+	@Test
+	void suggestCharacterTest() {
+		final String player = "Player";
+		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
+		final String suggested = "Bet Monkey";
+		ChoosingCharacter character = ChoosingCharacter.builder()
+				.character(suggested)
+				.build();
+
+		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
+		Optional<SynchronousGame> createdGame = Optional.of(game);
+		final String id = game.getId();
+		when(gameRepository.findById(id)).thenReturn(createdGame);
+
+		final var availablePlayer = game.findPlayer("Player");
+		final var currentPlayer = game.findPlayer(player);
+		assertEquals(availablePlayer, currentPlayer);
+
+		Optional<ChoosingCharacter> suggestedCharacter = gameService.suggestCharacter(id, player, suggestion);
+		Optional<ChoosingCharacter> expectedCharacter = Optional.of(character);
+		assertEquals(suggestedCharacter.get().getCharacter(), expectedCharacter.get().getCharacter());
+
+		assertThat(suggestedCharacter.get().getCharacter()).isEqualTo(suggested);
+	}
 }
