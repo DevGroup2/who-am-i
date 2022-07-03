@@ -7,7 +7,6 @@ import com.eleks.academy.whoami.core.state.GameFinished;
 import com.eleks.academy.whoami.core.state.GameState;
 import com.eleks.academy.whoami.core.state.WaitingForPlayers;
 import com.eleks.academy.whoami.enums.GameStatus;
-import com.eleks.academy.whoami.model.response.PlayerState;
 import com.eleks.academy.whoami.model.response.PlayerWithState;
 import lombok.EqualsAndHashCode;
 
@@ -111,7 +110,6 @@ public class PersistentGame implements Game, SynchronousGame {
 
 	@Override
 	public List<PlayerWithState> getPlayersInGame() {
-//		return this.currentState.peek().getPlayersList().stream().map(PlayerWithState::of).toList();
 		return this.currentState.peek().getPlayers().values().stream().map(PlayerWithState::of).toList();
 	}
 

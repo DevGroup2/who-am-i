@@ -59,11 +59,6 @@ public final class SuggestingCharacters extends AbstractGameState {
 		return GameStatus.SUGGESTING_CHARACTERS;
 	}
 
-	@Override
-	public Map<String, SynchronousPlayer> getPlayers() {
-		return players;
-	}
-
 	// TODO: Consider extracting into {@link GameState}
 	private Boolean finished() {
 		final var enoughCharacters = Optional.of(this.suggestedCharacters)
@@ -77,8 +72,6 @@ public final class SuggestingCharacters extends AbstractGameState {
 	}
 
 	private GameState suggestCharacter(String player, String character) {
-		// TODO: returned method wich add suggestedCharacter to playerCharacterMap
-		//  and compere with Nazar's Pull Request
 		List<GameCharacter> characters = this.suggestedCharacters.get(player);
 
 		if (Objects.isNull(characters)) {
@@ -92,6 +85,11 @@ public final class SuggestingCharacters extends AbstractGameState {
 		characters.add(GameCharacter.of(character, player));
 
 		return this;
+	}
+
+	@Override
+	public Map<String, SynchronousPlayer> getPlayers() {
+		return this.players;
 	}
 
 	/**
