@@ -28,6 +28,10 @@ public final class SuggestingCharacters extends AbstractGameState {
 		this.players = players;
 		this.suggestedCharacters = new HashMap<>(this.players.size());
 		this.playerCharacterMap = new HashMap<>(this.players.size());
+
+		for (SynchronousPlayer nextPlayer : this.players.values()) {
+			this.playerCharacterMap.put(nextPlayer.getName(), nextPlayer.getSuggestedCharacter());
+		}
 	}
 
 	/**
@@ -57,7 +61,7 @@ public final class SuggestingCharacters extends AbstractGameState {
 
 	@Override
 	public Map<String, SynchronousPlayer> getPlayers() {
-		return null;
+		return players;
 	}
 
 	// TODO: Consider extracting into {@link GameState}
