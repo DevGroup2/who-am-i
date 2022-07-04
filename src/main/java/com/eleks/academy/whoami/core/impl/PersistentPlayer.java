@@ -14,10 +14,8 @@ public class PersistentPlayer implements SynchronousPlayer {
 
 	@EqualsAndHashCode.Include private final String name;
 
-	private String assignedCharacter;
-	private boolean assigned = false;
 	private boolean suggested = false;
-	private String suggestedCharacter;
+	private String character;
 
 	public PersistentPlayer(String name) {
 		this.name = Objects.requireNonNull(name);
@@ -28,27 +26,13 @@ public class PersistentPlayer implements SynchronousPlayer {
 		return this.name;
 	}
 
-	public String getSuggestedCharacter() {
-		return suggestedCharacter;
-	}
 	@Override
 	public String getCharacter() {
-		return assignedCharacter;
+		return character;
 	}
+
 	@Override
-	public void setCharacter(String character) {
-		if (!assigned) {
-			suggestedCharacter = character;
-			assigned = true;
-		} else {
-			throw new GameException("Something going wrong when trying to assign a character to a player");
-		}
-	}
-	private void chooseCharacter(String character) {
-		this.suggestedCharacter = character;
-	}
-	@Override
-	public void setSuggestedCharacter(CharacterSuggestion suggestion) {
+	public void setCharacter(CharacterSuggestion suggestion) {
 		if (this.suggested) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Character has already been suggested!");
 		} else {
@@ -56,6 +40,8 @@ public class PersistentPlayer implements SynchronousPlayer {
 			this.suggested = true;
 		}
 	}
-
+	private void chooseCharacter(String character) {
+		this.character = character;
+	}
 
 }

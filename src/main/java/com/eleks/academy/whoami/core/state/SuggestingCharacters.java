@@ -30,7 +30,7 @@ public final class SuggestingCharacters extends AbstractGameState {
 		this.playerCharacterMap = new HashMap<>(this.players.size());
 
 		for (SynchronousPlayer nextPlayer : this.players.values()) {
-			this.playerCharacterMap.put(nextPlayer.getName(), nextPlayer.getSuggestedCharacter());
+			this.playerCharacterMap.put(nextPlayer.getName(), nextPlayer.getCharacter());
 		}
 	}
 

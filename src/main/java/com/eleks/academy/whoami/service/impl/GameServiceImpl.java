@@ -60,19 +60,15 @@ public class GameServiceImpl implements GameService {
 	@Override
 	public Optional<ChoosingCharacter> suggestCharacter(String id, String player, CharacterSuggestion suggestion) {
 		this.gameRepository.findById(id)
-				.filter(SynchronousGame::isAvailable)
-				.map(game -> game.findPlayer(player))
-				.ifPresentOrElse(p -> p.ifPresentOrElse(suggest -> suggest.setSuggestedCharacter(suggestion),
-								() -> {
-									throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't found a player");
-								}
-						),
+				.flatMap(game -> game.findPlayer(player))
+				.ifPresentOrElse(suggest -> suggest.setCharacter(suggestion),
 						() -> {
-							throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
+							throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game or player not found");
 						}
 				);
 		var availablePlayer = gameRepository.findById(id).flatMap(p -> p.findPlayer(player)).get();
 		return Optional.of(ChoosingCharacter.of(availablePlayer));
+
 	}
 
 	@Override

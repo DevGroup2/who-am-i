@@ -11,10 +11,6 @@ public interface SynchronousPlayer {
 
 	String getCharacter();
 
-	void setCharacter(String character);
-
-	void setSuggestedCharacter(CharacterSuggestion suggestion);
-
-	String getSuggestedCharacter();
+	void setCharacter(CharacterSuggestion suggestion);
 
 }

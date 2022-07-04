@@ -17,7 +17,7 @@ public class ChoosingCharacter {
 
     public static ChoosingCharacter of(SynchronousPlayer player) {
         return ChoosingCharacter.builder()
-                .character(player.getSuggestedCharacter())
+                .character(player.getCharacter())
                 .build();
     }
 }
