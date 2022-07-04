@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class NewGameRequest {
 
-	@Min(4)
-	@Max(4)
+	@Min(value = 4, message = "maxPlayers value must be equals 4")
+	@Max(value = 4, message = "maxPlayers value must be equals 4")
 	@NotNull(message = "maxPlayers must not be null")
 	private Integer maxPlayers;
 
