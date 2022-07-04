@@ -5,7 +5,6 @@ import com.eleks.academy.whoami.model.request.CharacterSuggestion;
 import com.eleks.academy.whoami.model.request.NewGameRequest;
 import com.eleks.academy.whoami.model.response.GameDetails;
 import com.eleks.academy.whoami.model.response.GameLight;
-import com.eleks.academy.whoami.model.response.ChoosingCharacter;
 import com.eleks.academy.whoami.model.response.TurnDetails;
 
 import java.util.List;
