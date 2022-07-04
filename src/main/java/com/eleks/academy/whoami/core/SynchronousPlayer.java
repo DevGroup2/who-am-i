@@ -8,6 +8,6 @@ public interface SynchronousPlayer {
 
 	String getCharacter();
 
-	void setCharacter(CharacterSuggestion suggestion);
+	String setCharacter(String character);
 
 }

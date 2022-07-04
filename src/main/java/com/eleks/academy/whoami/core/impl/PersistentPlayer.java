@@ -28,8 +28,8 @@ public class PersistentPlayer implements SynchronousPlayer {
 	}
 
 	@Override
-	public void setCharacter(CharacterSuggestion suggestion) {
-		this.character = suggestion.getCharacter();
+	public String setCharacter(String character) {
+		return this.character = character;
 	}
 
 }
