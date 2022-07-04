@@ -21,7 +21,7 @@ public interface GameService {
 
 	Optional<GameDetails> findByIdAndPlayer(String id, String player);
 
-	Optional<ChoosingCharacter> suggestCharacter(String id, String player, CharacterSuggestion suggestion);
+	void suggestCharacter(String id, String player, CharacterSuggestion suggestion);
 
 	Optional<GameDetails> startGame(String id, String player);
 
