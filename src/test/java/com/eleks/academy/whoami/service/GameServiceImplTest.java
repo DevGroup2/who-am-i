@@ -15,6 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +38,6 @@ public class GameServiceImplTest {
 	private GameServiceImpl gameService;
 
 	private final NewGameRequest gameRequest = new NewGameRequest();
-	private final CharacterSuggestion characterSuggestion = new CharacterSuggestion();
 
 	@BeforeEach
 	public void setMockMvc() {
@@ -148,28 +150,41 @@ public class GameServiceImplTest {
 	}
 
 	@Test
-	void suggestCharacterTest() {
+	void suggestCharacterWhenGameIsNotFoundTest() {
 		final String player = "Player";
 		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
-		final String suggested = "Bet Monkey";
-		ChoosingCharacter character = ChoosingCharacter.builder()
-				.character(suggested)
-				.build();
 
-		SynchronousGame game = new PersistentGame(player, gameRequest.getMaxPlayers());
-		Optional<SynchronousGame> createdGame = Optional.of(game);
-		final String id = game.getId();
-		when(gameRepository.findById(id)).thenReturn(createdGame);
+		SynchronousGame testedGame = new PersistentGame(player, gameRequest.getMaxPlayers());
+		final String id = testedGame.getId();
 
-		final var availablePlayer = game.findPlayer("Player");
-		final var currentPlayer = game.findPlayer(player);
-		assertEquals(availablePlayer, currentPlayer);
+		assertThrows(ResponseStatusException.class, () -> gameRepository.findById(id)
+				.map(game -> game.findPlayer("some other player"))
+				.ifPresentOrElse(p -> p.ifPresentOrElse(suggest -> suggest.setCharacter(suggestion.getCharacter()),
+								() -> {
+									throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't found a player");
+								}
+						),
+						() -> {
+							throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
+						}
+				));
 
-		Optional<ChoosingCharacter> suggestedCharacter = gameService.suggestCharacter(id, player, suggestion);
-		Optional<ChoosingCharacter> expectedCharacter = Optional.of(character);
-		assertEquals(suggestedCharacter.get().getCharacter(), expectedCharacter.get().getCharacter());
+	}
+	@Test
+	void suggestCharacterWhenPLayerIsNotFoundTest() {
+		final String player = "Player";
+		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
 
-		assertThat(suggestedCharacter.get().getCharacter()).isEqualTo(suggested);
+		final SynchronousGame testedGame = new PersistentGame(player, gameRequest.getMaxPlayers());
+		final String id = testedGame.getId();
+
+		assertThrows(ResponseStatusException.class, () -> gameRepository.findById(id)
+				.flatMap(game -> game.findPlayer(player))
+				.ifPresentOrElse(suggest -> suggest.setCharacter(suggestion.getCharacter()),
+						() -> {
+							throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't found a player");
+						}
+				));
 	}
 
 }

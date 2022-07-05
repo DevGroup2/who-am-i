@@ -1,22 +1,32 @@
 package com.eleks.academy.whoami.core.impl;
 
+
 import org.junit.jupiter.api.Test;
 
-import java.util.concurrent.Future;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PersistentPlayerTest {
+	final private PersistentPlayer player = new PersistentPlayer("Taras");
 
-//	@Test
-//	void allowToSuggestCharacterOnlyOnce() {
-//		PersistentPlayer player = new PersistentPlayer("PLayerName");
-//		Future<String> character = player.suggestCharacter();
-//		assertFalse(character.isDone());
-//		player.setCharacter("character");
-//		assertTrue(character.isDone());
-//		assertThrows(IllegalStateException.class, () -> player.setCharacter("character"));
-//	}
+	@Test
+	void getNameTest() {
+		String fakeName = "Jesus";
+		String originalName = player.getName();
+
+		assertThat(originalName).isNotEqualTo(fakeName);
+
+		String trueName = "Taras";
+		assertThat(originalName).isEqualTo(trueName);
+	}
+	@Test
+	void checkIfCharacterAdding(){
+		var getNull = player.getCharacter();
+		assertThat(getNull).isEqualTo(null);
+
+		var setChar = player.setCharacter("character");
+		var getChar = player.getCharacter();
+		assertEquals(getChar, setChar);
+	}
+
 }
