@@ -1,6 +1,7 @@
 package com.eleks.academy.whoami.service;
 
 import com.eleks.academy.whoami.core.SynchronousGame;
+import com.eleks.academy.whoami.core.SynchronousPlayer;
 import com.eleks.academy.whoami.core.impl.PersistentGame;
 import com.eleks.academy.whoami.core.impl.PersistentPlayer;
 import com.eleks.academy.whoami.enums.GameStatus;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -45,7 +47,7 @@ public class GameServiceImplTest {
 	}
 
 	@Test
-	void findAvailableGamesTest () {
+	void findAvailableGamesTest() {
 		final String player = "player";
 
 		SynchronousGame synchronousGame = new PersistentGame(player, gameRequest.getMaxPlayers());
@@ -151,40 +153,41 @@ public class GameServiceImplTest {
 
 	@Test
 	void suggestCharacterWhenGameIsNotFoundTest() {
-		final String player = "Player";
+		final String player = "Player1";
 		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
 
-		SynchronousGame testedGame = new PersistentGame(player, gameRequest.getMaxPlayers());
-		final String id = testedGame.getId();
+		SynchronousGame game = new PersistentGame(player, 4);
+		game.enrollToGame("Player2");
+		game.enrollToGame("Player3");
+		game.enrollToGame("Player4");
 
-		assertThrows(ResponseStatusException.class, () -> gameRepository.findById(id)
-				.map(game -> game.findPlayer("some other player"))
-				.ifPresentOrElse(p -> p.ifPresentOrElse(suggest -> suggest.setCharacter(suggestion.getCharacter()),
-								() -> {
-									throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't found a player");
-								}
-						),
-						() -> {
-							throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
-						}
-				));
+		when(gameRepository.findById(eq("id"))).thenReturn(Optional.of(game));
 
+		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
+				gameService.suggestCharacter("id", "new player", suggestion));
+
+		assertEquals("404 Game not found", responseStatusException.getMessage());
 	}
+
 	@Test
 	void suggestCharacterWhenPLayerIsNotFoundTest() {
-		final String player = "Player";
+		final String player = "Player1";
+		final String bonusPlayer = "New Player";
 		CharacterSuggestion suggestion = new CharacterSuggestion("Bet Monkey");
 
-		final SynchronousGame testedGame = new PersistentGame(player, gameRequest.getMaxPlayers());
-		final String id = testedGame.getId();
+		SynchronousGame game = new PersistentGame(player, 4);
+		final String id = game.getId();
+		game.enrollToGame("Player2");
+		game.enrollToGame("Player3");
 
-		assertThrows(ResponseStatusException.class, () -> gameRepository.findById(id)
-				.flatMap(game -> game.findPlayer(player))
-				.ifPresentOrElse(suggest -> suggest.setCharacter(suggestion.getCharacter()),
-						() -> {
-							throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't found a player");
-						}
-				));
+
+		when(gameRepository.findById(id)).thenReturn(Optional.of(game));
+
+		HttpClientErrorException responseStatusException = assertThrows(HttpClientErrorException.class, () ->
+				gameService.suggestCharacter(id, bonusPlayer, suggestion));
+
+		assertEquals("404 Player not found", responseStatusException.getMessage());
+
 	}
 
 }

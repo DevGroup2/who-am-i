@@ -13,6 +13,7 @@ import com.eleks.academy.whoami.service.GameService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -63,11 +64,11 @@ public class GameServiceImpl implements GameService {
 				.map(game -> game.findPlayer(player))
 				.ifPresentOrElse(p -> p.ifPresentOrElse(suggest -> suggest.setCharacter(suggestion.getCharacter()),
 								() -> {
-									throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can't found a player");
+									throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Player not found");
 								}
 						),
 						() -> {
-							throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Game not found");
+							throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Game not found");
 						}
 				);
 	}
