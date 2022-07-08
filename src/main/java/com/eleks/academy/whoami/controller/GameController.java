@@ -18,6 +18,7 @@ import java.util.List;
 
 import static com.eleks.academy.whoami.utils.StringUtils.Headers.PLAYER;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/games")
 @RequiredArgsConstructor
@@ -30,6 +31,7 @@ public class GameController {
 		return this.gameService.findAvailableGames(player);
 	}
 
+	@CrossOrigin(origins = {"https://who-am-i-group2-client.herokuapp.com"})
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public GameDetails createGame(@RequestHeader(PLAYER) String player,
